@@ -25,7 +25,7 @@ function AccordionItem({
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between py-4 text-left"
       >
-        <span className="text-sm font-medium">{title}</span>
+        <span className="text-sm font-semibold uppercase tracking-wider">{title}</span>
         <ChevronDown
           className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
@@ -49,25 +49,36 @@ export default function ProductAccordion({ description, details }: ProductAccord
   return (
     <div className="border-t">
       {description && (
-        <AccordionItem title="Description" defaultOpen>
+        <AccordionItem title="Apraksts" defaultOpen>
           <div dangerouslySetInnerHTML={{ __html: description }} />
         </AccordionItem>
       )}
 
-      <AccordionItem title="Shipping & Returns">
+      <AccordionItem title="Piegāde un atgriešana">
         <ul className="space-y-2">
-          <li>Free standard shipping on orders over $75</li>
-          <li>Express shipping available at checkout</li>
-          <li>Free returns within 30 days of delivery</li>
-          <li>Items must be unworn with original tags</li>
+          <li>Bezmaksas standarta piegāde pasūtījumiem virs €50</li>
+          <li>Piegāde visā Latvijā: 2–4 darba dienas</li>
+          <li>Starptautiskā piegāde: 5–10 darba dienas</li>
+          <li>Bezmaksas atgriešana 30 dienu laikā</li>
+          <li>Prece jābūt nelietotai ar oriģinālajām etiķetēm</li>
         </ul>
       </AccordionItem>
 
-      <AccordionItem title="Care Instructions">
+      <AccordionItem title="Kopšanas instrukcijas">
         <ul className="space-y-2">
-          <li>Please refer to the care label on the product</li>
-          <li>Store in a cool, dry place away from direct sunlight</li>
-          <li>Handle with care to maintain product quality</li>
+          <li>Mazgāt mazgāšanas mašīnā 30°C temperatūrā</li>
+          <li>Negludināt uz apdrukājuma</li>
+          <li>Ķīmiskā tīrīšana nav ieteicama</li>
+          <li>Kaltēt horizontāli ēnā</li>
+        </ul>
+      </AccordionItem>
+
+      <AccordionItem title="Materiāls">
+        <ul className="space-y-2">
+          <li>100% organiskā kokvilna, 180 g/m²</li>
+          <li>Pastiprināts apkakles šuvums</li>
+          <li>Dubultā šūšana uz pleciem un padusēm</li>
+          <li>Noskalotas, lai novērstu saraušanos</li>
         </ul>
       </AccordionItem>
     </div>

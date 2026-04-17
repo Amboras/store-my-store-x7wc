@@ -3,66 +3,87 @@
 import Link from 'next/link'
 import { clearConsent } from '@/lib/cookie-consent'
 import { usePolicies } from '@/hooks/use-policies'
+import { Instagram, Mail, MapPin } from 'lucide-react'
 
 const footerLinks = {
   shop: [
-    { label: 'All Products', href: '/products' },
-    { label: 'New Arrivals', href: '/products?sort=newest' },
-    { label: 'Collections', href: '/collections' },
+    { label: 'Visi t-krekli', href: '/products' },
+    { label: 'Jaunumi', href: '/products?sort=newest' },
+    { label: 'Kolekcijas', href: '/collections' },
   ],
   help: [
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Shipping & Returns', href: '/shipping' },
-    { label: 'Contact Us', href: '/contact' },
+    { label: 'BUJ', href: '/faq' },
+    { label: 'Piegāde un atgriešana', href: '/shipping' },
+    { label: 'Sazinies ar mums', href: '/contact' },
   ],
 }
 
 export default function Footer() {
   const { policies } = usePolicies()
 
-  // Build company links dynamically based on available policies
   const companyLinks = [
-    { label: 'About', href: '/about' },
+    { label: 'Par mums', href: '/about' },
   ]
 
-  // Add policy links only if they're set in the admin
   if (policies?.privacy_policy) {
-    companyLinks.push({ label: 'Privacy Policy', href: '/privacy' })
+    companyLinks.push({ label: 'Privātuma politika', href: '/privacy' })
   }
   if (policies?.terms_of_service) {
-    companyLinks.push({ label: 'Terms of Service', href: '/terms' })
+    companyLinks.push({ label: 'Lietošanas noteikumi', href: '/terms' })
   }
   if (policies?.refund_policy) {
-    companyLinks.push({ label: 'Refund Policy', href: '/refund-policy' })
+    companyLinks.push({ label: 'Atgriešanas politika', href: '/refund-policy' })
   }
   if (policies?.cookie_policy) {
-    companyLinks.push({ label: 'Cookie Policy', href: '/cookie-policy' })
+    companyLinks.push({ label: 'Sīkdatņu politika', href: '/cookie-policy' })
   }
 
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t bg-foreground text-background">
       <div className="container-custom py-section-sm">
         {/* Main Footer */}
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block">
-              <span className="font-heading text-2xl font-semibold">
-                Store
+              <span className="font-heading text-3xl font-bold uppercase tracking-tight text-background">
+                URBA
               </span>
             </Link>
-            <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Curated products crafted with care. Quality you can feel, design you can see.
+            <p className="mt-4 text-sm text-background/60 leading-relaxed max-w-xs">
+              Oriģināli latviesu dizaina t-krekli. Radīts Latvijā, domāts ikvienam.
             </p>
+            <div className="mt-5 flex items-center gap-4">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-background/60 hover:text-background transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a
+                href="mailto:info@urba.lv"
+                className="text-background/60 hover:text-background transition-colors"
+                aria-label="E-pasts"
+              >
+                <Mail className="h-5 w-5" />
+              </a>
+              <div className="flex items-center gap-1.5 text-background/60 text-xs">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>Rīga, Latvija</span>
+              </div>
+            </div>
           </div>
 
           {/* Shop Links */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4">Shop</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4 text-background/40">Veikals</h3>
             <ul className="space-y-3">
               {footerLinks.shop.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href={link.href} className="text-sm text-background/70 hover:text-background transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -72,11 +93,11 @@ export default function Footer() {
 
           {/* Help Links */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4">Help</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4 text-background/40">Palīdzība</h3>
             <ul className="space-y-3">
               {footerLinks.help.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href={link.href} className="text-sm text-background/70 hover:text-background transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -86,11 +107,11 @@ export default function Footer() {
 
           {/* Company Links */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4">Company</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-widest mb-4 text-background/40">Uzņēmums</h3>
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href={link.href} className="text-sm text-background/70 hover:text-background transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -100,9 +121,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Store. All rights reserved.
+        <div className="mt-12 pt-8 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-background/40">
+            &copy; {new Date().getFullYear()} URBA. Visas tiesības aizsargātas.
           </p>
           <div className="flex items-center gap-6">
             <button
@@ -110,11 +131,11 @@ export default function Footer() {
                 clearConsent()
                 window.dispatchEvent(new Event('manage-cookies'))
               }}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-background/40 hover:text-background/70 transition-colors"
             >
-              Manage Cookies
+              Pārvaldīt sīkdatnes
             </button>
-            <span className="text-xs text-muted-foreground">Powered by Amboras</span>
+            <span className="text-xs text-background/30">Powered by Amboras</span>
           </div>
         </div>
       </div>

@@ -4,35 +4,32 @@
 
 @layer base {
   :root {
-    --background: 40 20% 98%;
-    --foreground: 0 0% 10%;
-    --muted: 40 10% 94%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 35 40% 50%;
+    /* Crisp white & deep charcoal palette — modern streetwear brand */
+    --background: 0 0% 99%;
+    --foreground: 220 15% 10%;
+    --muted: 220 10% 95%;
+    --muted-foreground: 220 8% 48%;
+    --accent: 14 90% 53%;          /* bold orange-red accent */
     --accent-foreground: 0 0% 100%;
-    --border: 40 10% 88%;
-    --ring: 35 40% 50%;
-    --primary: 0 0% 10%;
-    --primary-foreground: 0 0% 98%;
+    --border: 220 10% 88%;
+    --ring: 14 90% 53%;
+    --primary: 220 15% 10%;
+    --primary-foreground: 0 0% 99%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-
-    /* Brand colors (dynamically injected from Store.metadata.brand) */
-    /* Access in CSS: var(--brand-primary), var(--brand-secondary) */
-    /* Managed by BrandStyleInjector component */
   }
 
   .dark {
-    --background: 0 0% 6%;
-    --foreground: 40 20% 94%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 35 45% 55%;
+    --background: 220 12% 7%;
+    --foreground: 0 0% 95%;
+    --muted: 220 10% 13%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 14 90% 55%;
     --accent-foreground: 0 0% 100%;
-    --border: 0 0% 16%;
-    --ring: 35 45% 55%;
-    --primary: 40 20% 94%;
-    --primary-foreground: 0 0% 6%;
+    --border: 220 10% 18%;
+    --ring: 14 90% 55%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 220 12% 7%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
   }
@@ -72,7 +69,6 @@
     @apply w-full;
   }
 
-  /* Brand color utilities - uses colors from Store.metadata.brand */
   .btn-brand-primary {
     background-color: var(--brand-primary, hsl(var(--primary)));
     color: white;
@@ -100,35 +96,48 @@
   .bg-brand-secondary {
     background-color: var(--brand-secondary, hsl(var(--accent)));
   }
+
+  /* Accent utility */
+  .accent-dot::before {
+    content: '';
+    @apply inline-block w-1.5 h-1.5 rounded-full bg-accent mr-2 align-middle;
+  }
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Selection color */
 ::selection {
-  @apply bg-accent/20 text-foreground;
+  background: hsl(14 90% 53% / 0.18);
+  color: hsl(var(--foreground));
 }
 
-/* Focus styles */
 :focus-visible {
   @apply outline-2 outline-offset-2 outline-ring;
 }
 
-/* Cookie consent animation */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+.animate-fade-in      { animation: fade-in 0.4s ease-out both; }
+.animate-fade-in-up   { animation: fade-in-up 0.6s ease-out both; }
+.animate-slide-in-right { animation: slide-in-right 0.3s ease-out both; }
+.animate-pulse-soft   { animation: pulse-soft 2s ease-in-out infinite; }

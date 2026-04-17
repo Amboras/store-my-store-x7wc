@@ -25,14 +25,12 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Focus close button when mobile menu opens
   useEffect(() => {
     if (isMobileMenuOpen) {
       mobileMenuCloseRef.current?.focus()
     }
   }, [isMobileMenuOpen])
 
-  // Close mobile menu on Escape
   useEffect(() => {
     if (!isMobileMenuOpen) return
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,7 +40,6 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isMobileMenuOpen])
 
-  // Focus trap for mobile menu
   const handleMobileMenuKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key !== 'Tab' || !mobileMenuRef.current) return
     const focusable = mobileMenuRef.current.querySelectorAll<HTMLElement>(
@@ -75,33 +72,36 @@ export default function Header() {
             <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="p-2 -ml-2 lg:hidden hover:opacity-70 transition-opacity"
-              aria-label="Open menu"
+              aria-label="Atvērt izvēlni"
             >
               <Menu className="h-5 w-5" />
             </button>
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <span className="font-heading text-2xl font-semibold tracking-tight">
-                Store
+              <span className="font-heading text-3xl font-bold tracking-tight uppercase">
+                URBA
               </span>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
-              <Link href="/products" className="text-sm tracking-wide uppercase link-underline py-1" prefetch={true}>
-                Shop All
+              <Link href="/products" className="text-sm tracking-widest uppercase link-underline py-1 font-medium" prefetch={true}>
+                Visi t-krekli
               </Link>
-              {collections?.slice(0, 4).map((collection: any) => (
+              {collections?.slice(0, 4).map((collection: { id: string; handle: string; title: string }) => (
                 <Link
                   key={collection.id}
                   href={`/collections/${collection.handle}`}
-                  className="text-sm tracking-wide uppercase link-underline py-1"
+                  className="text-sm tracking-widest uppercase link-underline py-1 font-medium"
                   prefetch={true}
                 >
                   {collection.title}
                 </Link>
               ))}
+              <Link href="/about" className="text-sm tracking-widest uppercase link-underline py-1 font-medium" prefetch={true}>
+                Par mums
+              </Link>
             </nav>
 
             {/* Actions */}
@@ -109,25 +109,25 @@ export default function Header() {
               <Link
                 href="/search"
                 className="p-2.5 hover:opacity-70 transition-opacity"
-                aria-label="Search"
+                aria-label="Meklēt"
               >
                 <Search className="h-5 w-5" />
               </Link>
               <Link
                 href={isLoggedIn ? '/account' : '/auth/login'}
                 className="p-2.5 hover:opacity-70 transition-opacity hidden sm:block"
-                aria-label={isLoggedIn ? 'Account' : 'Sign in'}
+                aria-label={isLoggedIn ? 'Konts' : 'Ieiet'}
               >
                 {isLoggedIn ? <User className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
               </Link>
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2.5 hover:opacity-70 transition-opacity"
-                aria-label="Shopping bag"
+                aria-label="Grozs"
               >
                 <ShoppingBag className="h-5 w-5" />
                 {itemCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">
+                  <span className="absolute top-0.5 right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
                     {itemCount}
                   </span>
                 )}
@@ -141,24 +141,24 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           <div
             ref={mobileMenuRef}
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation menu"
+            aria-label="Navigācijas izvēlne"
             onKeyDown={handleMobileMenuKeyDown}
             className="absolute inset-y-0 left-0 w-80 max-w-[85vw] bg-background animate-slide-in-right"
           >
             <div className="flex items-center justify-between p-4 border-b">
-              <span className="font-heading text-xl font-semibold">Menu</span>
+              <span className="font-heading text-2xl font-bold uppercase tracking-tight">URBA</span>
               <button
                 ref={mobileMenuCloseRef}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 hover:opacity-70"
-                aria-label="Close menu"
+                aria-label="Aizvērt izvēlni"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -167,36 +167,44 @@ export default function Header() {
               <Link
                 href="/products"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block py-3 text-lg tracking-wide border-b border-border/50"
+                className="block py-3 text-base tracking-wide border-b border-border/50 font-medium uppercase"
                 prefetch={true}
               >
-                Shop All
+                Visi t-krekli
               </Link>
-              {collections?.map((collection: any) => (
+              {collections?.map((collection: { id: string; handle: string; title: string }) => (
                 <Link
                   key={collection.id}
                   href={`/collections/${collection.handle}`}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-3 text-lg tracking-wide border-b border-border/50"
+                  className="block py-3 text-base tracking-wide border-b border-border/50 font-medium uppercase"
                   prefetch={true}
                 >
                   {collection.title}
                 </Link>
               ))}
+              <Link
+                href="/about"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-3 text-base tracking-wide border-b border-border/50 font-medium uppercase"
+                prefetch={true}
+              >
+                Par mums
+              </Link>
               <div className="pt-4 space-y-1">
                 <Link
                   href={isLoggedIn ? '/account' : '/auth/login'}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block py-3 text-muted-foreground"
                 >
-                  {isLoggedIn ? 'Account' : 'Sign In'}
+                  {isLoggedIn ? 'Mans konts' : 'Ieiet'}
                 </Link>
                 <Link
                   href="/search"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block py-3 text-muted-foreground"
                 >
-                  Search
+                  Meklēt
                 </Link>
               </div>
             </nav>
