@@ -1,16 +1,18 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 3600 // ISR: revalidate every hour
+export const revalidate = 3600
 import { medusaServerClient } from '@/lib/medusa-client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Truck, RotateCcw, Shield, ChevronRight } from 'lucide-react'
+import { Truck, RotateCcw, Shield, ChevronRight, BadgeCheck, Lock } from 'lucide-react'
 import ProductActions from '@/components/product/product-actions'
 import ProductAccordion from '@/components/product/product-accordion'
 import { ProductViewTracker } from '@/components/product/product-view-tracker'
 import { getProductPlaceholder } from '@/lib/utils/placeholder-images'
 import { type VariantExtension } from '@/components/product/product-price'
+import BundleOffer from '@/components/product/bundle-offer'
+import UrgencyBar from '@/components/product/urgency-bar'
 
 async function getProduct(handle: string) {
   try {
@@ -69,15 +71,15 @@ export async function generateMetadata({
   const product = await getProduct(handle)
 
   if (!product) {
-    return { title: 'Product Not Found' }
+    return { title: 'Produkts nav atrasts' }
   }
 
   return {
     title: product.title,
-    description: product.description || `Shop ${product.title}`,
+    description: product.description || `Iepērcies ${product.title} — URBA latviesu t-krekli`,
     openGraph: {
       title: product.title,
-      description: product.description || `Shop ${product.title}`,
+      description: product.description || `Iepērcies ${product.title}`,
       ...(product.thumbnail ? { images: [{ url: product.thumbnail }] } : {}),
     },
   }
@@ -99,10 +101,9 @@ export default async function ProductPage({
 
   const allImages = [
     ...(product.thumbnail ? [{ url: product.thumbnail }] : []),
-    ...(product.images || []).filter((img: any) => img.url !== product.thumbnail),
+    ...(product.images || []).filter((img: { url: string }) => img.url !== product.thumbnail),
   ]
 
-  // Use placeholder if no images
   const displayImages = allImages.length > 0
     ? allImages
     : [{ url: getProductPlaceholder(product.id) }]
@@ -110,14 +111,14 @@ export default async function ProductPage({
   return (
     <>
       {/* Breadcrumbs */}
-      <div className="border-b">
+      <div className="border-b bg-muted/20">
         <div className="container-custom py-3">
           <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <Link href="/" className="hover:text-foreground transition-colors">Sākums</Link>
             <ChevronRight className="h-3 w-3" />
-            <Link href="/products" className="hover:text-foreground transition-colors">Shop</Link>
+            <Link href="/products" className="hover:text-foreground transition-colors">T-krekli</Link>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-foreground">{product.title}</span>
+            <span className="text-foreground font-medium">{product.title}</span>
           </nav>
         </div>
       </div>
@@ -126,7 +127,7 @@ export default async function ProductPage({
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
           {/* Product Images */}
           <div className="space-y-3">
-            <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-sm">
+            <div className="relative aspect-[3/4] overflow-hidden bg-muted">
               <Image
                 src={displayImages[0].url}
                 alt={product.title}
@@ -139,10 +140,10 @@ export default async function ProductPage({
 
             {displayImages.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
-                {displayImages.slice(1, 5).map((image: any, idx: number) => (
+                {displayImages.slice(1, 5).map((image: { url: string }, idx: number) => (
                   <div
                     key={idx}
-                    className="relative aspect-[3/4] overflow-hidden bg-muted rounded-sm"
+                    className="relative aspect-[3/4] overflow-hidden bg-muted"
                   >
                     <Image
                       src={image.url}
@@ -158,15 +159,15 @@ export default async function ProductPage({
           </div>
 
           {/* Product Info */}
-          <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-            {/* Title & Subtitle */}
+          <div className="lg:sticky lg:top-24 lg:self-start space-y-5">
+            {/* Title */}
             <div>
               {product.subtitle && (
-                <p className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-2">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">
                   {product.subtitle}
                 </p>
               )}
-              <h1 className="text-h2 font-heading font-semibold">{product.title}</h1>
+              <h1 className="font-heading font-bold text-h2 uppercase leading-tight">{product.title}</h1>
             </div>
 
             <ProductViewTracker
@@ -177,26 +178,49 @@ export default async function ProductPage({
               value={product.variants?.[0]?.calculated_price?.calculated_amount ?? null}
             />
 
-            {/* Variant Selector + Price + Add to Cart (client component) */}
+            {/* Urgency bar */}
+            <UrgencyBar />
+
+            {/* Variant Selector + Price + Add to Cart */}
             <ProductActions product={product} variantExtensions={variantExtensions} />
 
+            {/* Bundle Offer */}
+            <BundleOffer product={product} variantExtensions={variantExtensions} />
+
             {/* Trust Signals */}
-            <div className="grid grid-cols-3 gap-4 py-6 border-t">
-              <div className="text-center">
-                <Truck className="h-5 w-5 mx-auto mb-1.5" strokeWidth={1.5} />
-                <p className="text-xs text-muted-foreground">Free Shipping</p>
+            <div className="border border-border/60 bg-muted/20 p-4 space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <BadgeCheck className="h-4 w-4 text-accent flex-shrink-0" strokeWidth={2} />
+                <span><strong>30 dienu garantija</strong> — pilna naudas atmaksa bez jautājumiem</span>
               </div>
-              <div className="text-center">
-                <RotateCcw className="h-5 w-5 mx-auto mb-1.5" strokeWidth={1.5} />
-                <p className="text-xs text-muted-foreground">30-Day Returns</p>
+              <div className="flex items-center gap-3 text-sm">
+                <Truck className="h-4 w-4 text-accent flex-shrink-0" strokeWidth={1.5} />
+                <span><strong>Bezmaksas piegāde</strong> pasūtījumiem virs €50 Latvijā</span>
               </div>
-              <div className="text-center">
-                <Shield className="h-5 w-5 mx-auto mb-1.5" strokeWidth={1.5} />
-                <p className="text-xs text-muted-foreground">Secure Checkout</p>
+              <div className="flex items-center gap-3 text-sm">
+                <Lock className="h-4 w-4 text-accent flex-shrink-0" strokeWidth={1.5} />
+                <span><strong>Droša apmaksa</strong> ar 256-bitu SSL šifrēšanu</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <RotateCcw className="h-4 w-4 text-accent flex-shrink-0" strokeWidth={1.5} />
+                <span><strong>Vienkārša atgriešana</strong> — 30 dienu laikā bez maksas</span>
               </div>
             </div>
 
-            {/* Accordion Sections */}
+            {/* Payment icons row */}
+            <div className="flex items-center gap-2 flex-wrap pt-1">
+              <span className="text-xs text-muted-foreground">Pieņemam:</span>
+              {['Visa', 'Mastercard', 'PayPal', 'Apple Pay'].map((method) => (
+                <span
+                  key={method}
+                  className="text-xs border border-border px-2 py-1 text-muted-foreground rounded-sm"
+                >
+                  {method}
+                </span>
+              ))}
+            </div>
+
+            {/* Accordion */}
             <ProductAccordion
               description={product.description}
               details={product.metadata as Record<string, string> | undefined}

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { clearConsent } from '@/lib/cookie-consent'
 import { usePolicies } from '@/hooks/use-policies'
-import { Instagram, Mail, MapPin } from 'lucide-react'
+import { Share2, Mail, MapPin } from 'lucide-react'
 
 const footerLinks = {
   shop: [
@@ -61,7 +61,7 @@ export default function Footer() {
                 className="text-background/60 hover:text-background transition-colors"
                 aria-label="Instagram"
               >
-                <Instagram className="h-5 w-5" />
+                <Share2 className="h-5 w-5" />
               </a>
               <a
                 href="mailto:info@urba.lv"

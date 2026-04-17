@@ -41,7 +41,6 @@ interface ProductOptionWithValues {
   values?: (string | ProductOptionValue)[]
 }
 
-// Helper: extract price amount from calculated_price object
 function getVariantPriceAmount(variant: ProductVariantWithPrice | undefined): number | null {
   const cp = variant?.calculated_price
   if (!cp) return null
@@ -49,17 +48,12 @@ function getVariantPriceAmount(variant: ProductVariantWithPrice | undefined): nu
 }
 
 export default function ProductActions({ product, variantExtensions }: ProductActionsProps) {
-  // Medusa Admin API returns variant.options as VariantOption[] (the `options`
-  // relation expanded), but the SDK's generic ProductVariant type declares it
-  // as Record<string, string>. Cast here so the rest of the component can use
-  // the actual runtime shape.
   const variants = useMemo(
     () => (product.variants || []) as unknown as ProductVariantWithPrice[],
     [product.variants],
   )
   const options = useMemo(() => product.options || [], [product.options])
 
-  // Track selected value per option: { "opt_xxx": "S", "opt_yyy": "Black" }
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {}
     const firstVariant = variants[0]
@@ -78,7 +72,6 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
   const [justAdded, setJustAdded] = useState(false)
   const { addItem, isAddingItem } = useCart()
 
-  // Find variant matching all selected options
   const selectedVariant = useMemo(() => {
     if (variants.length <= 1) return variants[0]
 
@@ -92,7 +85,6 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
     }) || variants[0]
   }, [variants, selectedOptions])
 
-  // Extension data for selected variant (compare-at + inventory)
   const ext = selectedVariant?.id ? variantExtensions?.[selectedVariant.id] : null
   const currentPriceCents = getVariantPriceAmount(selectedVariant)
   const cp = selectedVariant?.calculated_price
@@ -116,7 +108,7 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
       {
         onSuccess: () => {
           setJustAdded(true)
-          toast.success('Added to bag')
+          toast.success('Pievienots grozam')
           const metaValue = toMetaCurrencyValue(currentPriceCents)
           trackAddToCart(product?.id || '', selectedVariant.id, quantity, currentPriceCents ?? undefined)
           trackMetaEvent('AddToCart', {
@@ -131,13 +123,12 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
           setTimeout(() => setJustAdded(false), 2000)
         },
         onError: (error: Error) => {
-          toast.error(error.message || 'Failed to add to bag')
+          toast.error(error.message || 'Neizdevās pievienot grozam')
         },
       }
     )
   }
 
-  // Should we show variant selectors?
   const hasMultipleVariants = variants.length > 1
 
   return (
@@ -153,12 +144,10 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
 
       {/* Option Selectors */}
       {hasMultipleVariants && options.map((option: ProductOptionWithValues) => {
-        // option.values is an array of { id, value, ... } objects
         const values = (option.values || []).map((v: string | ProductOptionValue) =>
           typeof v === 'string' ? v : v.value
         ).filter(Boolean) as string[]
 
-        // Skip if only "One Size" or "Default"
         if (values.length <= 1 && (values[0] === 'One Size' || values[0] === 'Default')) {
           return null
         }
@@ -180,8 +169,6 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
               {values.map((value) => {
                 const isSelected = selectedValue === value
 
-                // Check availability: is there a variant with this option value that's in stock
-                // (or that allows backorders)?
                 const isAvailable = variants.some((v: ProductVariantWithPrice) => {
                   const hasValue = v.options?.some(
                     (o: VariantOption) => (o.option_id === optionId || o.option?.id === optionId) && o.value === value
@@ -218,7 +205,7 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
       {/* Low Stock Warning */}
       {isLowStock && (
         <p className="text-sm text-accent font-medium">
-          Only {inventoryQuantity} left in stock
+          Atlicis tikai {inventoryQuantity} gabali noliktavā
         </p>
       )}
 
@@ -229,7 +216,7 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
             className="p-3 hover:bg-muted transition-colors"
             disabled={quantity <= 1}
-            aria-label="Decrease quantity"
+            aria-label="Samazināt daudzumu"
           >
             <Minus className="h-4 w-4" />
           </button>
@@ -238,7 +225,7 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
             onClick={() => setQuantity(quantity + 1)}
             className="p-3 hover:bg-muted transition-colors"
             disabled={isOutOfStock || (!allowBackorder && inventoryQuantity != null && quantity >= inventoryQuantity)}
-            aria-label="Increase quantity"
+            aria-label="Palielināt daudzumu"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -247,12 +234,12 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
         <button
           onClick={handleAddToCart}
           disabled={isOutOfStock || isAddingItem}
-          className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold uppercase tracking-wide transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-bold uppercase tracking-widest transition-all ${
             isOutOfStock
               ? 'bg-muted text-muted-foreground cursor-not-allowed'
               : justAdded
               ? 'bg-green-700 text-white'
-              : 'bg-foreground text-background hover:opacity-90'
+              : 'bg-foreground text-background hover:bg-accent transition-colors'
           }`}
         >
           {isAddingItem ? (
@@ -260,12 +247,12 @@ export default function ProductActions({ product, variantExtensions }: ProductAc
           ) : justAdded ? (
             <>
               <Check className="h-4 w-4" />
-              Added
+              Pievienots!
             </>
           ) : isOutOfStock ? (
-            'Sold Out'
+            'Izpārdots'
           ) : (
-            'Add to Bag'
+            'Pievienot grozam'
           )}
         </button>
       </div>
